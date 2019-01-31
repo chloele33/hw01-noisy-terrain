@@ -34,10 +34,10 @@ float interpNoise2D(float x, float y) {
     float fractX = fract(x);
     float fractY = fract(y);
 
-    float v1 = random1(vec2(intX, intY), vec2(1.f, 1.f));
-    float v2 = random1(vec2(intX + 1.0, intY), vec2(1.f, 1.f));
-    float v3 = random1(vec2(intX, intY + 1.0), vec2(1.f, 1.f));
-    float v4 = random1(vec2(intX + 1.0, intY + 1.0), vec2(1.f, 1.f));
+    float v1 = random1(vec2(intX, intY), vec2(1.0, 1.0));
+    float v2 = random1(vec2(intX + 1.0, intY), vec2(1.0, 1.0));
+    float v3 = random1(vec2(intX, intY + 1.0), vec2(1.0, 1.0));
+    float v4 = random1(vec2(intX + 1.0, intY + 1.0), vec2(1.0, 1.0));
 
     float i1 = mix(v1, v2, fractX);
     float i2 = mix(v3, v4, fractX);
@@ -104,7 +104,6 @@ float redistributeNoise(float noise, float offset) {
 
 void main()
 {
-  fs_Pos = vs_Pos.xyz;
   vec2 pos = vs_Pos.xz + u_PlanePos;
 
 
@@ -116,13 +115,12 @@ void main()
 
   // redistribute noise
   float offset = 1.8;
-  noise = redistributeNoise(noise, offset);
+  float height = redistributeNoise(noise, offset);
 
 
+  vec4 modelposition = vec4(vs_Pos.x, height * 3.0, vs_Pos.z, 1.0);
 
-  vec4 modelposition = vec4(vs_Pos.x, noise * 3.0, vs_Pos.z, 1.0);
-
-
+  fs_Pos = modelposition.xyz;
   modelposition = u_Model * modelposition;
   gl_Position = u_ViewProj * modelposition;
 }

@@ -120,3 +120,9 @@ the change in noise will look more "directional" than if you use 4D.
 in your environment according to terrain type, e.g. trees, buildings, animals.
 - __(10 - 20 pts)__ Cast a ray from your mouse and perform an action to modify the terrain (height or color), making your environment paintable.
 - __(? pts)__ Propose an extra feature of your own!
+
+
+## References
+https://thebookofshaders.com/13/
+https://thebookofshaders.com/12/
+https://www.iquilezles.org/www/articles/morenoise/morenoise.htm
