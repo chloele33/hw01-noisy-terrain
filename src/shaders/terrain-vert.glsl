@@ -46,8 +46,8 @@ float interpNoise2D(float x, float y) {
 
 float fbm(float x, float y) {
   float total = 0.f;
-  float persistence = 0.5f;
-  int octaves = 16;
+  float persistence = 0.56f;
+  int octaves = 8;
   float amp = .5;
 
   vec2 pos = vec2(x, y);
@@ -70,6 +70,27 @@ float fbm(float x, float y) {
   return  total;
 }
 
+float worley(float x, float y) {
+    vec2 pos = vec2(x/40.0, y/40.0);
+
+    float m_dist = 40.f;  // minimun distance
+    vec2 m_point = vec2(0.f, 0.f);       // minimum point
+
+    for (int j=-1; j<=1; j++ ) {
+        for (int i=-1; i<=1; i++ ) {
+            vec2 neighbor = vec2(floor(pos.x) + float(j), floor(pos.y) + float(i));
+            vec2 point = neighbor + random2(neighbor, vec2(1.f, 1.f));
+            float dist = distance(pos, point);
+
+            if( dist < m_dist ) {
+                m_dist = dist;
+                m_point = point;
+            }
+        }
+    }
+    return m_dist;
+}
+
 float returnHeight(vec4 pos) {
     return 0.0;
 }
@@ -84,6 +105,7 @@ void main()
   fs_Sine = (sin((vs_Pos.x + u_PlanePos.x) * 3.14159 * 0.1) + cos((vs_Pos.z + u_PlanePos.y) * 3.14159 * 0.1));
 
   float noise = fbm(pos.x*3.0, pos.y*3.0);
+  noise += 1.5 * (worley(pos.x * 3.0, pos.y * 3.0));
 
   noise = abs(noise); //create creases
   noise = 2.2 - noise;
