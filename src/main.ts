@@ -11,8 +11,13 @@ import ShaderProgram, {Shader} from './rendering/gl/ShaderProgram';
 // Define an object with application parameters and button callbacks
 // This will be referred to by dat.GUI's functions that add GUI elements.
 const controls = {
-  tesselations: 5,
-  'Load Scene': loadScene, // A function pointer, essentially
+  seaLevel: 0.0,
+  //'Load Scene': loadScene, // A function pointer, essentially
+  //'Color': [255, 0, 0, 1],
+  //'Shaders': 'Lambert',
+  //'R': 255,
+  //'G': 0,
+  //'B':0
 };
 
 let square: Square;
@@ -22,6 +27,7 @@ let aPressed: boolean;
 let sPressed: boolean;
 let dPressed: boolean;
 let planePos: vec2;
+let prevLevel: number = 0.0;
 
 function loadScene() {
   square = new Square(vec3.fromValues(0, 0, 0));
@@ -82,6 +88,7 @@ function main() {
 
   // Add controls to the gui
   const gui = new DAT.GUI();
+  gui.add(controls, 'seaLevel', -0.4, 0.1).step(0.005);
 
   // get canvas and webgl context
   const canvas = <HTMLCanvasElement> document.getElementById('canvas');
@@ -99,7 +106,7 @@ function main() {
   const camera = new Camera(vec3.fromValues(0, 10, -20), vec3.fromValues(0, 0, 0));
 
   const renderer = new OpenGLRenderer(canvas);
-  renderer.setClearColor(164.0 / 255.0, 233.0 / 255.0, 1.0, 1);
+  renderer.setClearColor(205.0 / 255.0, 240.0 / 255.0, 255.0 / 255.0, 1);
   gl.enable(gl.DEPTH_TEST);
 
   const lambert = new ShaderProgram([
@@ -138,6 +145,14 @@ function main() {
     stats.begin();
     gl.viewport(0, 0, window.innerWidth, window.innerHeight);
     renderer.clear();
+
+    //Gui Controls
+    if(controls.seaLevel != prevLevel)
+    {
+      prevLevel = controls.seaLevel;
+      lambert.setSeaLevel(prevLevel);
+    }
+
     processKeyPresses();
     renderer.render(camera, lambert, [
       plane,

@@ -5,6 +5,7 @@ uniform mat4 u_Model;
 uniform mat4 u_ModelInvTr;
 uniform mat4 u_ViewProj;
 uniform vec2 u_PlanePos; // Our location in the virtual world displayed by the plane
+uniform float u_SeaLevel;
 
 in vec4 vs_Pos;
 in vec4 vs_Nor;
@@ -115,7 +116,7 @@ void main()
 
   // redistribute noise
   float offset = 1.8;
-  float height = redistributeNoise(noise, offset);
+  float height = redistributeNoise(noise, offset) + u_SeaLevel;
 
 
   vec4 modelposition = vec4(vs_Pos.x, height * 3.0, vs_Pos.z, 1.0);

@@ -30,6 +30,7 @@ class ShaderProgram {
   unifViewProj: WebGLUniformLocation;
   unifColor: WebGLUniformLocation;
   unifPlanePos: WebGLUniformLocation;
+  unifSeaLevel: WebGLUniformLocation;
 
   constructor(shaders: Array<Shader>) {
     this.prog = gl.createProgram();
@@ -49,6 +50,8 @@ class ShaderProgram {
     this.unifModelInvTr = gl.getUniformLocation(this.prog, "u_ModelInvTr");
     this.unifViewProj   = gl.getUniformLocation(this.prog, "u_ViewProj");
     this.unifPlanePos   = gl.getUniformLocation(this.prog, "u_PlanePos");
+    this.unifSeaLevel      = gl.getUniformLocation(this.prog, "u_SeaLevel");
+
   }
 
   use() {
@@ -69,6 +72,14 @@ class ShaderProgram {
       mat4.transpose(modelinvtr, model);
       mat4.invert(modelinvtr, modelinvtr);
       gl.uniformMatrix4fv(this.unifModelInvTr, false, modelinvtr);
+    }
+  }
+
+  setSeaLevel(h: number) {
+    this.use();
+    if (this.unifSeaLevel !== -1)
+    {
+      gl.uniform1f(this.unifSeaLevel, h);
     }
   }
 

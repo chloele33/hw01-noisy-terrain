@@ -123,5 +123,6 @@ void main()
     vec3 col = getColor(pos, fs_Pos.y * heightNoise);
 
 
-    out_Col = vec4(mix(vec3(0.5 * (col + 1.0)), vec3(164.0 / 255.0, 233.0 / 255.0, 1.0), t), 1.0);
+    out_Col = vec4(mix(vec3(0.5 * (col + 1.0)), vec3(205.0 / 255.0, 233.0 / 255.0, 1.0), t), 1.0);
+
 }
