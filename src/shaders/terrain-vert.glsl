@@ -28,11 +28,70 @@ vec2 random2( vec2 p , vec2 seed) {
   return fract(sin(vec2(dot(p + seed, vec2(311.7, 127.1)), dot(p + seed, vec2(269.5, 183.3)))) * 85734.3545);
 }
 
+float interpNoise2D(float x, float y) {
+    float intX = floor(x);
+    float intY = floor(y);
+    float fractX = fract(x);
+    float fractY = fract(y);
+
+    float v1 = random1(vec2(intX, intY), vec2(1.f, 1.f));
+    float v2 = random1(vec2(intX + 1.0, intY), vec2(1.f, 1.f));
+    float v3 = random1(vec2(intX, intY + 1.0), vec2(1.f, 1.f));
+    float v4 = random1(vec2(intX + 1.0, intY + 1.0), vec2(1.f, 1.f));
+
+    float i1 = mix(v1, v2, fractX);
+    float i2 = mix(v3, v4, fractX);
+    return mix(i1, i2, fractY);
+}
+
+float fbm(float x, float y) {
+  float total = 0.f;
+  float persistence = 0.5f;
+  int octaves = 16;
+  float amp = .5;
+
+  vec2 pos = vec2(x, y);
+  vec2 shift = vec2(100.0);
+
+  mat2 rot = mat2(cos(0.5), sin(0.5),
+                      -sin(0.5), cos(0.50));
+
+  for (int i = 0; i < octaves; i++) {
+    float freq = pow(2.0, float(i));
+    float amp = pow(persistence, float(i));
+
+    pos = rot * pos * 1.0 + shift;
+
+    total += abs(interpNoise2D( pos.x / 100.0  * freq, pos.y / 20.0 * freq)) * amp;
+//    x *= 2.0f;
+//    y *= 2.0f;
+//    amp *= 0.8f;
+  }
+  return  total;
+}
+
+float returnHeight(vec4 pos) {
+    return 0.0;
+}
+
+
 void main()
 {
   fs_Pos = vs_Pos.xyz;
+  vec2 pos = vs_Pos.xz + u_PlanePos;
+
+
   fs_Sine = (sin((vs_Pos.x + u_PlanePos.x) * 3.14159 * 0.1) + cos((vs_Pos.z + u_PlanePos.y) * 3.14159 * 0.1));
-  vec4 modelposition = vec4(vs_Pos.x, fs_Sine * 2.0, vs_Pos.z, 1.0);
+
+  float noise = fbm(pos.x*3.0, pos.y*3.0);
+
+  noise = abs(noise); //create creases
+  noise = 2.2 - noise;
+  noise = noise * noise;
+
+  vec4 modelposition = vec4(vs_Pos.x, noise * 3.0, vs_Pos.z, 1.0);
+
+
   modelposition = u_Model * modelposition;
   gl_Position = u_ViewProj * modelposition;
 }
