@@ -46,9 +46,9 @@ float interpNoise2D(float x, float y) {
 
 float fbm(float x, float y) {
   float total = 0.f;
-  float persistence = 0.56f;
+  float persistence = 0.5f;
   int octaves = 8;
-  float amp = .5;
+  float roughness = 1.0;
 
   vec2 pos = vec2(x, y);
   vec2 shift = vec2(100.0);
@@ -62,7 +62,8 @@ float fbm(float x, float y) {
 
     pos = rot * pos * 1.0 + shift;
 
-    total += abs(interpNoise2D( pos.x / 100.0  * freq, pos.y / 20.0 * freq)) * amp;
+    total += abs(interpNoise2D( pos.x / 100.0  * freq, pos.y / 20.0 * freq)) * amp * roughness;
+    roughness *= interpNoise2D(pos.x / 5.0  * freq, pos.y / 5.0 * freq);
 //    x *= 2.0f;
 //    y *= 2.0f;
 //    amp *= 0.8f;
@@ -91,8 +92,13 @@ float worley(float x, float y) {
     return m_dist;
 }
 
-float returnHeight(vec4 pos) {
-    return 0.0;
+
+float redistributeNoise(float noise, float offset) {
+      noise = abs(noise); //create creases
+      noise = offset - noise; // invert to flip creases
+      noise = noise * noise; //sharpen
+
+      return noise;
 }
 
 
@@ -104,12 +110,15 @@ void main()
 
   fs_Sine = (sin((vs_Pos.x + u_PlanePos.x) * 3.14159 * 0.1) + cos((vs_Pos.z + u_PlanePos.y) * 3.14159 * 0.1));
 
-  float noise = fbm(pos.x*3.0, pos.y*3.0);
-  noise += 1.5 * (worley(pos.x * 3.0, pos.y * 3.0));
+  float noise = fbm(pos.x*3.0, pos.y*3.0); //fbm
+  noise += 1.5 * (worley(pos.x * 3.0 + 3.0, pos.y * 3.0 + 3.0)); //worley
 
-  noise = abs(noise); //create creases
-  noise = 2.2 - noise;
-  noise = noise * noise;
+
+  // redistribute noise
+  float offset = 1.8;
+  noise = redistributeNoise(noise, offset);
+
+
 
   vec4 modelposition = vec4(vs_Pos.x, noise * 3.0, vs_Pos.z, 1.0);
 
