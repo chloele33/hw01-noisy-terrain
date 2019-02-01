@@ -6,6 +6,7 @@ uniform mat4 u_ModelInvTr;
 uniform mat4 u_ViewProj;
 uniform vec2 u_PlanePos; // Our location in the virtual world displayed by the plane
 uniform float u_SeaLevel;
+uniform float u_MountCount;
 
 in vec4 vs_Pos;
 in vec4 vs_Nor;
@@ -72,8 +73,9 @@ float fbm(float x, float y) {
   return  total;
 }
 
-float worley(float x, float y) {
-    vec2 pos = vec2(x/40.0, y/40.0);
+float worley(float x, float y, float scale) {
+    float scale_invert = abs(80.0 - scale);
+    vec2 pos = vec2(x/scale_invert, y/scale_invert);
 
     float m_dist = 40.f;  // minimun distance
     vec2 m_point = vec2(0.f, 0.f);       // minimum point
@@ -111,7 +113,7 @@ void main()
   fs_Sine = (sin((vs_Pos.x + u_PlanePos.x) * 3.14159 * 0.1) + cos((vs_Pos.z + u_PlanePos.y) * 3.14159 * 0.1));
 
   float noise = fbm(pos.x*3.0, pos.y*3.0); //fbm
-  noise += 1.5 * (worley(pos.x * 3.0 + 3.0, pos.y * 3.0 + 3.0)); //worley
+  noise += 1.5 * (worley(pos.x * 3.0 + 3.0, pos.y * 3.0 + 3.0, u_MountCount)); //worley
 
 
   // redistribute noise

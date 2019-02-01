@@ -31,6 +31,7 @@ class ShaderProgram {
   unifColor: WebGLUniformLocation;
   unifPlanePos: WebGLUniformLocation;
   unifSeaLevel: WebGLUniformLocation;
+  unifMountCount: WebGLUniformLocation;
 
   constructor(shaders: Array<Shader>) {
     this.prog = gl.createProgram();
@@ -51,7 +52,7 @@ class ShaderProgram {
     this.unifViewProj   = gl.getUniformLocation(this.prog, "u_ViewProj");
     this.unifPlanePos   = gl.getUniformLocation(this.prog, "u_PlanePos");
     this.unifSeaLevel      = gl.getUniformLocation(this.prog, "u_SeaLevel");
-
+    this.unifMountCount = gl.getUniformLocation(this.prog, "u_MountCount");
   }
 
   use() {
@@ -80,6 +81,14 @@ class ShaderProgram {
     if (this.unifSeaLevel !== -1)
     {
       gl.uniform1f(this.unifSeaLevel, h);
+    }
+  }
+
+  setMountCount(n: number) {
+    this.use();
+    if (this.unifMountCount !== -1)
+    {
+      gl.uniform1f(this.unifMountCount, n);
     }
   }
 

@@ -12,6 +12,7 @@ import ShaderProgram, {Shader} from './rendering/gl/ShaderProgram';
 // This will be referred to by dat.GUI's functions that add GUI elements.
 const controls = {
   seaLevel: 0.0,
+  mountainCount: 40.0
   //'Load Scene': loadScene, // A function pointer, essentially
   //'Color': [255, 0, 0, 1],
   //'Shaders': 'Lambert',
@@ -28,6 +29,8 @@ let sPressed: boolean;
 let dPressed: boolean;
 let planePos: vec2;
 let prevLevel: number = 0.0;
+let prevMountCount: number = 0.0;
+
 
 function loadScene() {
   square = new Square(vec3.fromValues(0, 0, 0));
@@ -89,6 +92,7 @@ function main() {
   // Add controls to the gui
   const gui = new DAT.GUI();
   gui.add(controls, 'seaLevel', -0.4, 0.1).step(0.005);
+  gui.add(controls, 'mountainCount', 20.0,  60.0).step(1.0);
 
   // get canvas and webgl context
   const canvas = <HTMLCanvasElement> document.getElementById('canvas');
@@ -151,6 +155,12 @@ function main() {
     {
       prevLevel = controls.seaLevel;
       lambert.setSeaLevel(prevLevel);
+    }
+
+    if(controls.mountainCount != prevMountCount)
+    {
+      prevMountCount = controls.mountainCount;
+      lambert.setMountCount(prevMountCount);
     }
 
     processKeyPresses();
